@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        class Component extends HTMLElement {
+            constructor(config) {
+                super();
+                this.id = config.id
+                this.config = config
+                this.render();
+            }
+            connectedCallback() { }
+            render = async () => {
+                //renderizar basado en el config
+                this.innerHTML = this.config.attt1;
+            }
+        }
+        customElements.define('w-component', Component);
+        //export { Component }
+
+        var Data = {
+            id: "comp1",
+            attt1: "val",
+        };//cualquier objeto definido en el fron o backend
+        var dataProxy = {
+            get: function (target, property) {
+                //hacer algo con el componente ya sea por su id por su definicion o por lo que quieras
+                
+                return target[property];
+            },
+            set: function (target, property, value, receiver) {
+                target[property] = value;
+                document.querySelector("#" + target.id).render();
+               
+                return true;
+            }
+        };
+        var proxy = new Proxy(Data, dataProxy);
+        const component = new Component(proxy);
+        window.onload = () => {
+            App.append(component);
+            setTimeout(() => {
+               proxy.attt1 = "cambiando val"
+            }, 1000);
+        }
+
+
+    </script>
+</head>
+
+<body id="App">
+    <div id="Header"></div>
+    <div id="Main"></div>
+</body>
+
+</html>
